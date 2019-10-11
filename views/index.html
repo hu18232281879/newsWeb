@@ -26,7 +26,7 @@
         <ul class="sub_menu show">
             <li><a href="#" class="icon031">文章列表</a></li>
             <li><a href="/addArticle" class="icon032">添加文章</a></li>
-            <li><a href="#" class="icon034">添加分类</a></li>
+            <li><a href="/addType" class="icon034">添加分类</a></li>
         </ul>
     </div>
 </div>
@@ -38,9 +38,9 @@
     <div class="pannel">
         <span class="sel_label">请选择文章分类：</span>
         <select name="select" id="select" class="sel_opt">
-            <option selected="true">财经新闻</option>
-            <option>体育新闻</option>
-            <option>科技新闻</option>
+        {{range $key,$value:=.articleTypes}}
+            <option selected="true">{{$value.TypeName}}</option>
+        {{end}}
         </select>
 
         <table class="common_table">
@@ -60,12 +60,13 @@
                 <td><a href="/content?id={{$value.Id}}">查看详情</a></td>
                 <td> {{$value.Time.Format "2006-01-02 15:04:05"}}</td>
                 <td>{{$value.ReadCount}}</td>
-                <td><a href="#" class="dels">删除</a></td>
-                <td><a href="#">编辑</a></td>
-                <td>财经新闻</td>
+                <td><a href="/delete?id={{$value.Id}}" class="dels">删除</a></td>
+                <td><a href="/update?id={{$value.Id}}">编辑</a></td>
+                <td>{{$value.ArticleType.TypeName}}</td>
             </tr>
         {{end}}
         </table>
+    {{.errmsg}}
 
         <ul class="pagenation">
             <li><a href="/index?pageIndex=1">首页</a></li>
