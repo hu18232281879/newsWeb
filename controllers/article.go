@@ -17,6 +17,7 @@ type ArticleController struct {
 
 func (this *ArticleController) ShowIndex() {
 	pageIndex, err := this.GetInt("pageIndex")
+	typeName:=this.GetString("select")
 	if err != nil {
 		pageIndex = 1
 	}
@@ -25,10 +26,20 @@ func (this *ArticleController) ShowIndex() {
 	qs := o.QueryTable("Article")
 	articles := new([]models.Article)
 	//qs.All(articles)
-	count, _ := qs.RelatedSel("ArticleType").Count()
+	var count int64
+	if typeName==""{
+		count, _ = qs.RelatedSel("ArticleType").Count()
+	}else {
+		count, _ = qs.RelatedSel("ArticleType").Filter("ArticleType__TypeName",typeName).Count()
+	}
+
 	pageSize := 2
 	pageCount := int(math.Ceil(float64(count) / float64(pageSize)))
-	qs.Limit(pageSize, (pageIndex-1)*pageSize).RelatedSel("ArticleType").All(articles)
+	if typeName==""{
+		qs.Limit(pageSize, (pageIndex-1)*pageSize).RelatedSel("ArticleType").All(articles)
+	}else {
+		qs.Limit(pageSize, (pageIndex-1)*pageSize).RelatedSel("ArticleType").Filter("ArticleType__TypeName",typeName).All(articles)
+	}
 	this.Data["count"] = count
 	this.Data["pageCount"] = pageCount
 	this.Data["articles"] = articles
@@ -37,6 +48,7 @@ func (this *ArticleController) ShowIndex() {
 	o.QueryTable("ArticleType").All(articleTypes)
 	this.Data["articleTypes"]=articleTypes
 	this.Data["errmsg"] = errmsg
+	this.Data["typeName"]=typeName
 	this.TplName = "index.html"
 }
 func (this *ArticleController) ShowAddArticle() {

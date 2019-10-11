@@ -6,7 +6,20 @@
     <link rel="stylesheet" type="text/css" href="/static/css/reset.css">
     <link rel="stylesheet" type="text/css" href="/static/css/main.css">
     <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script>
+        window.onload = function (ev) {
+            $(".dels").click(function () {
+                if (!confirm("是否确认删除?")) {
+                    return false
+                }
+            });
 
+            //找标签   找事件
+            $("#select").change(function () {
+                $("#form").submit()
+            })
+        }
+    </script>
 </head>
 <body>
 
@@ -37,12 +50,13 @@
     </div>
     <div class="pannel">
         <span class="sel_label">请选择文章分类：</span>
-        <select name="select" id="select" class="sel_opt">
-        {{range $key,$value:=.articleTypes}}
-            <option selected="true">{{$value.TypeName}}</option>
-        {{end}}
-        </select>
-
+        <form method="get" action="/index" id="form">
+            <select name="select" id="select" class="sel_opt">
+            {{range $key,$value:=.articleTypes}}
+                <option {{if compare $.typeName .TypeName}} selected="true"{{end}}>{{$value.TypeName}}</option>
+            {{end}}
+            </select>
+        </form>
         <table class="common_table">
             <tr>
                 <th width="43%">文章标题</th>
@@ -69,10 +83,10 @@
     {{.errmsg}}
 
         <ul class="pagenation">
-            <li><a href="/index?pageIndex=1">首页</a></li>
-            <li><a href="/index?pageIndex={{prePage .pageIndex}}">上一页 </a></li>
-            <li><a href="/index?pageIndex={{nextPage .pageIndex .pageCount}}">下一页</a></li>
-            <li><a href="/index?pageIndex={{.pageCount}}">末页</a></li>
+            <li><a href="/index?pageIndex=1&select={{.typeName}}">首页</a></li>
+            <li><a href="/index?pageIndex={{prePage .pageIndex}}&select={{.typeName}}">上一页 </a></li>
+            <li><a href="/index?pageIndex={{nextPage .pageIndex .pageCount}}&select={{.typeName}}">下一页</a></li>
+            <li><a href="/index?pageIndex={{.pageCount}}&select={{.typeName}}">末页</a></li>
             <li>共{{.count}}条记录/共{{.pageCount}}页/当前{{.pageIndex}}页</li>
         </ul>
     </div>
